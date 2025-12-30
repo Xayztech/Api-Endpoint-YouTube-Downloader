@@ -42,97 +42,91 @@ const userAgents = [
   "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko"
 ];
 
+const FALLBACK_API_URL = "https://api.botcahx.eu.org/api/dowloader/yt";
+const FALLBACK_API_KEY = "XYCoolcraftNihBoss"; // API Key Server-side
+
+// Helper Functions
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
 function getVideoId(url) {
   const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
   const match = url.match(regex);
   return match ? match[1] : null;
 }
 
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
-
 export default async function handler(req, res) {
-  // Set CORS headers agar bisa diakses dari mana saja
+  // Setup CORS agar bisa diakses dari web mana saja
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-api-key');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // Cek API Key
+  // Validasi API Key milik Project Kita (Client ke Server Kita)
   const apiKey = req.headers['x-api-key'] || req.query.apikey;
   if (!apiKey || apiKey.length < 8) {
     return res.status(401).json({
       status: false,
       code: 401,
-      message: "API Key Missing. Please get a key from the dashboard."
+      message: "API Key Missing or Invalid. Please generate one from the dashboard."
     });
   }
 
   const { url } = req.query;
-
-  if (!url) {
-    return res.status(400).json({ status: false, code: 400, message: "URL parameter is required" });
-  }
+  if (!url) return res.status(400).json({ status: false, message: "URL parameter is required" });
 
   const videoId = getVideoId(url);
-  if (!videoId) {
-    return res.status(400).json({ status: false, code: 400, message: "Invalid YouTube URL format" });
-  }
+  if (!videoId) return res.status(400).json({ status: false, message: "Invalid YouTube URL format" });
 
-  // Logika Retry & Failover
-  const maxAttempts = 6;
+  // Variables untuk Logic Failover
+  const maxAttempts = 5;
   let attempt = 0;
   let success = false;
   let resultData = null;
   
-  // Acak urutan server supaya beban terbagi
+  // Acak server Invidious
   const shuffledInstances = INVIDIOUS_INSTANCES.sort(() => 0.5 - Math.random());
 
+  // --- METHOD 1: COBA INVIDIOUS (Multi-Server) ---
   while (attempt < maxAttempts && !success) {
     const currentInstance = shuffledInstances[attempt];
-    const currentUA = getRandom(userAgents); // Mengambil dari 20 UA di atas
-    const apiUrl = `${currentInstance}/api/v1/videos/${videoId}`;
-
     attempt++;
-    // Jeda bertahap: 0ms, 800ms, 1600ms...
-    if (attempt > 1) await sleep(800 * (attempt - 1));
+    
+    // Delay sedikit jika percobaan pertama gagal
+    if (attempt > 1) await sleep(500);
 
     try {
-      const response = await axios.get(apiUrl, {
-        headers: { 'User-Agent': currentUA },
-        timeout: 4500 // Timeout 4.5 detik
+      const response = await axios.get(`${currentInstance}/api/v1/videos/${videoId}`, {
+        headers: { 'User-Agent': getRandom(USER_AGENTS) },
+        timeout: 4999 // 4.5 detik timeout
       });
 
       if (response.status === 200) {
-        success = true;
         const data = response.data;
-        
         let downloads = [];
-        
-        // Filter Video + Audio (Combo)
+
+        // Parsing hasil Invidious (Video + Audio)
         if (data.formatStreams) {
-            downloads = data.formatStreams.map(item => ({
-                type: "video_combo",
-                quality: item.qualityLabel || item.resolution,
-                format: item.container,
-                url: item.url,
-                size: item.size || "Unknown"
-            }));
+            data.formatStreams.forEach(item => {
+                downloads.push({
+                    type: "video", // Kualitas bervariasi
+                    quality: item.qualityLabel || item.resolution,
+                    format: item.container,
+                    url: item.url
+                });
+            });
         }
 
-        // Filter Audio Only
+        // Parsing Audio Only
         if (data.adaptiveFormats) {
-            const audioOnly = data.adaptiveFormats.find(item => item.type && item.type.includes("audio/mp4"));
-            if (audioOnly) {
+            const audio = data.adaptiveFormats.find(i => i.type && i.type.includes("audio/mp4"));
+            if (audio) {
                 downloads.push({
-                    type: "audio_only",
+                    type: "audio",
                     quality: "HQ Audio",
                     format: "m4a",
-                    url: audioOnly.url,
-                    size: audioOnly.size || "Unknown"
+                    url: audio.url
                 });
             }
         }
@@ -140,32 +134,87 @@ export default async function handler(req, res) {
         resultData = {
             status: true,
             code: 200,
-            server_used: currentInstance,
+            server_used: "Invidious Engine (" + new URL(currentInstance).hostname + ")",
             data: {
                 id: videoId,
                 title: data.title,
-                description: data.description,
-                duration: data.lengthSeconds,
-                views: data.viewCount,
                 author: data.author,
+                duration: data.lengthSeconds + "s",
                 thumbnail: data.videoThumbnails ? data.videoThumbnails[0].url : "",
                 downloads: downloads
             }
         };
+        success = true;
       }
-    } catch (error) {
-      // Loop berlanjut ke server berikutnya jika gagal
+    } catch (e) {
+      // Gagal di server ini, lanjut ke loop berikutnya
     }
   }
 
-  if (success) {
+  // --- METHOD 2: FALLBACK KE BOTCAHX (Jika semua Invidious gagal) ---
+  if (!success) {
+    try {
+        console.log("Switching to Fallback Engine (BotCahx)...");
+        const fallbackFullUrl = `${FALLBACK_API_URL}?url=${encodeURIComponent(url)}&apikey=${FALLBACK_API_KEY}`;
+        
+        const fbRes = await axios.get(fallbackFullUrl, { timeout: 15000 });
+        const fbData = fbRes.data;
+
+        // BotCahx structure: { status: true, result: { mp4: "link", mp3: "link", ... } }
+        if (fbData.status && fbData.result) {
+            const r = fbData.result;
+            const downloads = [];
+
+            // 1. Masukkan MP4 (Auto Download Video)
+            if (r.mp4) {
+                downloads.push({
+                    type: "video_auto",
+                    quality: "Auto",
+                    format: "mp4",
+                    url: r.mp4
+                });
+            }
+
+            // 2. Masukkan MP3 (Auto Convert Audio)
+            if (r.mp3) {
+                downloads.push({
+                    type: "audio_auto",
+                    quality: "Auto",
+                    format: "mp3",
+                    url: r.mp3
+                });
+            }
+
+            resultData = {
+                status: true,
+                code: 200,
+                server_used: "Xayz Tech",
+                data: {
+                    id: r.id || videoId,
+                    title: r.title,
+                    author: "External Source",
+                    duration: r.duration,
+                    thumbnail: r.thumb,
+                    downloads: downloads
+                }
+            };
+            success = true;
+        }
+    } catch (e) {
+        console.error("Fallback Error:", e.message);
+    }
+  }
+
+  // --- RETURN FINAL RESPONSE ---
+  if (success && resultData) {
+    // Cache response agar cepat jika direquest ulang (1 jam)
     res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
     return res.status(200).json(resultData);
   } else {
     return res.status(503).json({
       status: false,
       code: 503,
-      message: "Service Busy. Please try again in a moment."
+      message: "System Busy. All servers are currently unreachable. Please try again in a few minutes."
     });
   }
-    }
+  }
