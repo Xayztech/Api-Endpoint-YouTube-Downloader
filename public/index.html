@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xayz Downloader</title>
+    <style>
+        /* --- RESET & BASE --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        
+        body {
+            background-color: #0f0c29;
+            background-image: linear-gradient(315deg, #0f0c29 0%, #302b63 74%, #24243e 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* --- CONTAINER GLASS --- */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        /* --- DEKORASI GLOW --- */
+        .glow-circle {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: #7000ff;
+            filter: blur(90px);
+            border-radius: 50%;
+            z-index: -1;
+        }
+        .gc-1 { top: -50px; left: -50px; background: #00ff88; }
+        .gc-2 { bottom: -50px; right: -50px; }
+
+        /* --- TYPOGRAPHY --- */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: -webkit-linear-gradient(#00ff88, #00c3ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+        
+        p { color: #ccc; margin-bottom: 2rem; font-size: 0.9rem; }
+
+        /* --- INPUT & BUTTONS --- */
+        .input-group { position: relative; margin-bottom: 1.5rem; }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            outline: none;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+        
+        input:focus {
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-group { display: flex; gap: 10px; justify-content: center; }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+
+        .btn-mp3 { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-mp3:hover { background: #7000ff; border-color: #7000ff; box-shadow: 0 0 20px rgba(112, 0, 255, 0.4); }
+
+        .btn-mp4 { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-mp4:hover { background: #00ff88; color: #000; border-color: #00ff88; box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); }
+
+        /* --- STATUS BOX --- */
+        #status {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            min-height: 20px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-circle gc-1"></div>
+    <div class="glow-circle gc-2"></div>
+
+    <div class="glass-container">
+        <h1>Xayz YT DL</h1>
+        <p>YouTube & Music Downloader Endpoint</p>
+
+        <div class="input-group">
+            <input type="text" id="urlInput" placeholder="Tempel Link YouTube disini...">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-mp3" onclick="download('mp3')">Music (MP3)</button>
+            <button class="btn-mp4" onclick="download('mp4')">Video (MP4)</button>
+        </div>
+
+        <div id="status">Memproses...</div>
+    </div>
+
+    <script>
+        function download(type) {
+            const url = document.getElementById('urlInput').value;
+            const status = document.getElementById('status');
+
+            if (!url) {
+                status.innerText = "⚠️ Harap masukkan URL!";
+                status.style.opacity = "1";
+                status.style.color = "#ff4444";
+                return;
+            }
+
+            status.innerText = "⏳ Sedang memproses... Harap tunggu.";
+            status.style.opacity = "1";
+            status.style.color = "#00ff88";
+
+            window.location.href = `/api/download?url=${encodeURIComponent(url)}&type=${type}`;
+            
+            setTimeout(() => {
+                status.innerText = "✅ Download dimulai!";
+            }, 3000);
+        }
+    </script>
+</body>
+  </html>
