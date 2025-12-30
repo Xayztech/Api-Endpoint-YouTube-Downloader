@@ -1,4 +1,5 @@
 import axios from 'axios';
+import yts from 'yt-search';
 
 // --- 1. DAFTAR SERVER INVIDIOUS (ROTASI) ---
 const INVIDIOUS_INSTANCES = [
@@ -47,7 +48,6 @@ const FALLBACK_API_KEY = "XYCoolcraftNihBoss";
 
 // Helper
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 function getVideoId(url) {
   const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
@@ -56,17 +56,17 @@ function getVideoId(url) {
 }
 
 export default async function handler(req, res) {
-  // CORS Setup
+  // CORS Setup (Agar bisa diakses dari frontend mana saja)
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-api-key');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const { url, apikey, action, stream_url, filename, type } = req.query;
+  const { url, apikey, action, stream_url, filename, type, q } = req.query;
 
-  // --- FITUR BARU: PROXY STREAM (Untuk Memperbaiki Download MP3) ---
-  // Ini menangani request download agar file otomatis ter-rename dan punya format yang benar
+  // --- 1. PROXY STREAM (Download Handler) ---
+  // Menangani permintaan download agar file otomatis ter-download sebagai mp3/mp4
   if (action === 'stream' && stream_url) {
     try {
         const response = await axios({
@@ -74,17 +74,13 @@ export default async function handler(req, res) {
             url: stream_url,
             responseType: 'stream'
         });
-
-        // Tentukan Content-Type
         const contentType = type === 'mp3' ? 'audio/mpeg' : 'video/mp4';
         const extension = type === 'mp3' ? 'mp3' : 'mp4';
         const finalFilename = filename ? `${filename.replace(/[^a-z0-9]/gi, '_')}.${extension}` : `download.${extension}`;
-
-        // Set Headers agar browser langsung download (bukan play)
+        
         res.setHeader('Content-Type', contentType);
         res.setHeader('Content-Disposition', `attachment; filename="${finalFilename}"`);
         
-        // Pipe data langsung dari sumber ke user (Serverless Streaming)
         response.data.pipe(res);
         return; 
     } catch (error) {
@@ -92,82 +88,90 @@ export default async function handler(req, res) {
     }
   }
 
-  // --- LOGIKA UTAMA (GET METADATA) ---
-
-  // Cek API Key
+  // --- VALIDASI API KEY ---
   const reqApiKey = req.headers['x-api-key'] || apikey;
   if (!reqApiKey || reqApiKey.length < 5) {
-    return res.status(401).json({ status: false, message: "Invalid API Key" });
+    return res.status(401).json({ status: false, message: "Invalid API Key. Please Generate one from Dashboard." });
   }
 
+  // --- 2. SEARCH FEATURE (MENGGUNAKAN YT-SEARCH) ---
+  if (type === 'search') {
+      if (!q) return res.status(400).json({ status: false, message: "Query 'q' is required for search" });
+      
+      try {
+          // Melakukan pencarian menggunakan library yt-search
+          const r = await yts(q);
+          
+          // Mengambil array 'videos' dari hasil pencarian
+          const videos = r.videos || [];
+
+          // Memformat data agar sesuai dengan tampilan Frontend
+          const searchData = videos.map(v => ({
+              id: v.videoId,
+              title: v.title,
+              author: v.author.name,
+              thumbnail: v.thumbnail,
+              url: v.url,
+              duration: v.timestamp,
+              published: v.ago // Contoh: "2 days ago"
+          }));
+
+          return res.status(200).json({
+              status: true,
+              code: 200,
+              message: "Search Results via yt-search",
+              data: searchData
+          });
+
+      } catch (e) {
+          console.error("Search Error:", e);
+          return res.status(500).json({ status: false, message: "Search Failed: " + e.message });
+      }
+  }
+
+  // --- 3. DOWNLOADER LOGIC (GET METADATA) ---
   if (!url) return res.status(400).json({ status: false, message: "URL required" });
   const videoId = getVideoId(url);
-  if (!videoId) return res.status(400).json({ status: false, message: "Invalid ID" });
+  if (!videoId) return res.status(400).json({ status: false, message: "Invalid Youtube ID" });
 
   let resultData = null;
   let success = false;
 
-  // 1. Prioritas Utama: BotCahx (Karena user minta fitur Auto MP3/MP4 yang stabil)
-  // Kita ubah urutan: Coba BotCahx dulu untuk kecepatan, baru Invidious jika gagal
-  // Atau tetap Invidious dulu? Sesuai request "Apikey luar", kita pakai logika Fallback yang kuat.
-  
-  // -- METHOD: INVIDIOUS ROTATION --
+  // METHOD: INVIDIOUS ROTATION (Untuk mengambil link download)
   let attempt = 0;
   const shuffled = INVIDIOUS_INSTANCES.sort(() => 0.5 - Math.random());
   
   while (attempt < 3 && !success) {
     try {
         const instance = shuffled[attempt];
-        const apiUrl = `${instance}/api/v1/videos/${videoId}`;
         attempt++;
-        
-        const resp = await axios.get(apiUrl, { timeout: 3500 });
+        const resp = await axios.get(`${instance}/api/v1/videos/${videoId}`, { timeout: 4000 });
         if(resp.status === 200) {
             const d = resp.data;
             let downloads = [];
-
-            // Mapping Invidious Data
+            
+            // Link Video
             if(d.formatStreams) {
                 d.formatStreams.forEach(v => {
-                    downloads.push({
-                        type: "video",
-                        quality: v.qualityLabel,
-                        format: v.container,
-                        url: v.url // Link langsung
-                    });
+                    downloads.push({ type: "video", quality: v.qualityLabel, format: v.container, url: v.url });
                 });
             }
+            // Link Audio
             if(d.adaptiveFormats) {
                 const aud = d.adaptiveFormats.find(a => a.type.includes("audio/mp4"));
-                if(aud) {
-                    downloads.push({
-                        type: "audio",
-                        quality: "HQ",
-                        format: "m4a",
-                        url: aud.url
-                    });
-                }
+                if(aud) downloads.push({ type: "audio", quality: "HQ", format: "m4a", url: aud.url });
             }
-
+            
             resultData = {
-                status: true,
-                code: 200,
-                server_used: "Invidious Node",
-                data: {
-                    id: videoId,
-                    title: d.title,
-                    thumbnail: d.videoThumbnails ? d.videoThumbnails[0].url : "",
-                    duration: d.lengthSeconds,
-                    author: d.author,
-                    downloads: downloads
-                }
+                status: true, code: 200, server_used: "Invidious Node",
+                data: { id: videoId, title: d.title, thumbnail: d.videoThumbnails ? d.videoThumbnails[0].url : "", duration: d.lengthSeconds, author: d.author, downloads }
             };
             success = true;
         }
     } catch(e) { }
   }
 
-  // -- METHOD: BOTCAHX (FALLBACK / AUTO) --
+  // METHOD: BOTCAHX (FALLBACK)
   if(!success) {
       try {
           const fbUrl = `${FALLBACK_API_URL}?url=${encodeURIComponent(url)}&apikey=${FALLBACK_API_KEY}`;
@@ -177,56 +181,32 @@ export default async function handler(req, res) {
           if(fb.status && fb.result) {
               const r = fb.result;
               let downloads = [];
-              
-              // Disini triknya: Kita bungkus URL asli BotCahx ke dalam Proxy URL server kita
-              // Agar pas user klik, server kita yang handle rename ke .mp3
-              
-              // Get Base URL dari host header untuk membuat link proxy sendiri
               const host = req.headers.host; 
               const protocol = req.headers['x-forwarded-proto'] || 'http';
               const baseUrl = `${protocol}://${host}/api/youtube`;
 
+              // Membungkus link BotCahx dengan Proxy Stream kita agar bisa di-download otomatis
               if(r.mp4) {
-                  const proxyUrl = `${baseUrl}?action=stream&type=mp4&filename=${encodeURIComponent(r.title)}&stream_url=${encodeURIComponent(r.mp4)}`;
                   downloads.push({
-                      type: "video_auto",
-                      quality: "Auto",
-                      format: "mp4",
-                      url: proxyUrl // Link menuju endpoint proxy kita
+                      type: "video_auto", quality: "Auto", format: "mp4",
+                      url: `${baseUrl}?action=stream&type=mp4&filename=${encodeURIComponent(r.title)}&stream_url=${encodeURIComponent(r.mp4)}`
                   });
               }
-
               if(r.mp3) {
-                  // Paksa MP3
-                  const proxyUrlMp3 = `${baseUrl}?action=stream&type=mp3&filename=${encodeURIComponent(r.title)}&stream_url=${encodeURIComponent(r.mp3)}`;
                   downloads.push({
-                      type: "audio_auto",
-                      quality: "Auto",
-                      format: "mp3",
-                      url: proxyUrlMp3 // Link menuju endpoint proxy kita
+                      type: "audio_auto", quality: "Auto", format: "mp3",
+                      url: `${baseUrl}?action=stream&type=mp3&filename=${encodeURIComponent(r.title)}&stream_url=${encodeURIComponent(r.mp3)}`
                   });
               }
-
               resultData = {
-                  status: true,
-                  code: 200,
-                  server_used: "Xayz Tech",
-                  data: {
-                      id: r.id,
-                      title: r.title,
-                      thumbnail: r.thumb,
-                      duration: r.duration,
-                      author: "Xayz Prime",
-                      downloads: downloads
-                  }
+                  status: true, code: 200, server_used: "BotCahx Auto System",
+                  data: { id: r.id, title: r.title, thumbnail: r.thumb, duration: r.duration, author: "External", downloads }
               };
               success = true;
           }
-      } catch(e) {
-          console.log(e.message);
-      }
+      } catch(e) { }
   }
 
   if(success) return res.status(200).json(resultData);
   return res.status(503).json({ status: false, message: "Server Busy" });
-  }
+}
