@@ -119,7 +119,7 @@ export default async function handler(req, res) {
           return res.status(200).json({
               status: true,
               code: 200,
-              message: "Search Results via yt-search",
+              message: "Search Results",
               data: searchData
           });
 
@@ -163,7 +163,7 @@ export default async function handler(req, res) {
             }
             
             resultData = {
-                status: true, code: 200, server_used: "Invidious Node",
+                status: true, code: 200, server_used: "Xayz Tech", owner: "XYCoolcraft", Developer: "XYCoolcraft",
                 data: { id: videoId, title: d.title, thumbnail: d.videoThumbnails ? d.videoThumbnails[0].url : "", duration: d.lengthSeconds, author: d.author, downloads }
             };
             success = true;
@@ -199,7 +199,7 @@ export default async function handler(req, res) {
                   });
               }
               resultData = {
-                  status: true, code: 200, server_used: "BotCahx Auto System",
+                  status: true, code: 200, server_used: "Xayz Tech", owner: "XYCoolcraft", Developer: "XYCoolcraft",
                   data: { id: r.id, title: r.title, thumbnail: r.thumb, duration: r.duration, author: "External", downloads }
               };
               success = true;
