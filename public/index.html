@@ -1,159 +1,761 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xayz Downloader</title>
+    <title>YT Pro API Ultimate</title>
     <style>
-        /* --- RESET & BASE --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        
+        :root {
+            --bg-color: #0f172a;
+            --sidebar-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --code-bg: #020617;
+            --success: #10b981;
+        }
+
         body {
-            background-color: #0f0c29;
-            background-image: linear-gradient(315deg, #0f0c29 0%, #302b63 74%, #24243e 100%);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
         }
 
-        /* --- CONTAINER GLASS --- */
-        .glass-container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 3rem;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
-            position: relative;
-        }
-
-        /* --- DEKORASI GLOW --- */
-        .glow-circle {
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            background: #7000ff;
-            filter: blur(90px);
-            border-radius: 50%;
-            z-index: -1;
-        }
-        .gc-1 { top: -50px; left: -50px; background: #00ff88; }
-        .gc-2 { bottom: -50px; right: -50px; }
-
-        /* --- TYPOGRAPHY --- */
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            background: -webkit-linear-gradient(#00ff88, #00c3ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
-        }
-        
-        p { color: #ccc; margin-bottom: 2rem; font-size: 0.9rem; }
-
-        /* --- INPUT & BUTTONS --- */
-        .input-group { position: relative; margin-bottom: 1.5rem; }
-        
-        input {
-            width: 100%;
-            padding: 15px;
-            border-radius: 10px;
-            border: 2px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3);
-            color: #fff;
-            outline: none;
+        /* SIDEBAR */
+        #sidebar {
+            height: 100%;
+            width: 260px;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: -260px;
+            background-color: var(--sidebar-bg);
+            overflow-x: hidden;
             transition: 0.3s;
-            font-size: 1rem;
+            padding-top: 60px;
+            border-right: 1px solid var(--border);
+            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
         }
-        
+
+        #sidebar.open {
+            left: 0;
+        }
+
+        #sidebar a {
+            padding: 16px 25px;
+            text-decoration: none;
+            font-size: 16px;
+            color: var(--text-muted);
+            display: block;
+            transition: 0.2s;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        #sidebar a:hover, #sidebar a.active {
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid var(--accent);
+        }
+
+        /* MAIN CONTENT */
+        #main-content {
+            transition: margin-left .3s;
+            padding: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .hamburger {
+            font-size: 28px;
+            cursor: pointer;
+            margin-right: 20px;
+            padding: 5px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+        }
+
+        .page-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h2 { margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 15px; color: #fff; }
+        h3 { color: var(--text-main); margin-top: 25px; }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            background-color: var(--code-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: monospace;
+        }
+
         input:focus {
-            border-color: #00ff88;
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            outline: none;
+            border-color: var(--accent);
         }
 
-        .btn-group { display: flex; gap: 10px; justify-content: center; }
-
-        button {
-            flex: 1;
-            padding: 12px;
+        button.action-btn {
+            background-color: var(--accent);
+            color: white;
+            padding: 14px 28px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.85rem;
+            font-size: 16px;
+            font-weight: 600;
+            transition: 0.2s;
+            width: 100%;
+            margin-top: 10px;
         }
 
-        .btn-mp3 { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-mp3:hover { background: #7000ff; border-color: #7000ff; box-shadow: 0 0 20px rgba(112, 0, 255, 0.4); }
+        button.action-btn:hover {
+            background-color: var(--accent-hover);
+        }
 
-        .btn-mp4 { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-mp4:hover { background: #00ff88; color: #000; border-color: #00ff88; box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); }
+        /* DOWNLOAD RESULT STYLES */
+        .video-meta {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
 
-        /* --- STATUS BOX --- */
-        #status {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            min-height: 20px;
-            opacity: 0;
-            transition: opacity 0.5s;
+        .video-thumb {
+            width: 100%;
+            max-width: 320px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .dl-item {
+            background: var(--code-bg);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+            margin-bottom: 10px;
+        }
+
+        .dl-btn {
+            background-color: var(--success);
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+        
+        .dl-btn:hover { opacity: 0.9; }
+
+        /* DOCS & CODE STYLES */
+        .apikey-display {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 22px;
+            text-align: center;
+            color: var(--success);
+            padding: 20px;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 20px 0;
+            word-break: break-all;
+            display: none;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .tab-btn:hover { background: rgba(255,255,255,0.05); }
+
+        .tab-btn.active-tab {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            color: #e2e8f0;
+            margin: 0;
+        }
+
+        code { color: #fbbf24; background: rgba(0,0,0,0.3); padding: 2px 5px; border-radius: 4px; }
+        
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .param-table th, .param-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .param-table th { color: var(--accent); }
+
+        /* Responsiveness */
+        @media (min-width: 768px) {
+            #main-content.pushed { margin-left: 260px; }
         }
     </style>
 </head>
 <body>
-    <div class="glow-circle gc-1"></div>
-    <div class="glow-circle gc-2"></div>
 
-    <div class="glass-container">
-        <h1>Xayz YT DL</h1>
-        <p>YouTube & Music Downloader Endpoint</p>
+    <div id="sidebar">
+        <div style="padding: 20px; text-align: center; font-weight: bold; color: white; border-bottom: 1px solid var(--border); margin-bottom: 10px;">
+            MENU
+        </div>
+        <a onclick="showSection('home')" id="nav-home" class="active">🏠 Home Downloader</a>
+        <a onclick="showSection('docs')" id="nav-docs">🔑 API Key & Docs</a>
+    </div>
 
-        <div class="input-group">
-            <input type="text" id="urlInput" placeholder="Tempel Link YouTube disini...">
+    <div id="main-content">
+        <div class="navbar">
+            <span class="hamburger" onclick="toggleNav()">&#9776;</span>
+            <span class="logo">YouTube API Ultimate</span>
         </div>
 
-        <div class="btn-group">
-            <button class="btn-mp3" onclick="download('mp3')">Music (MP3)</button>
-            <button class="btn-mp4" onclick="download('mp4')">Video (MP4)</button>
+        <div id="home" class="page-section active">
+            <div class="card">
+                <h2>🎥 YouTube Video Downloader</h2>
+                <p>Paste the YouTube URL and your API Key to download videos directly.</p>
+                
+                <label>API Key:</label>
+                <input type="text" id="apiKeyInput" placeholder="Enter API Key (Get one from the Docs menu)">
+                
+                <label>YouTube URL:</label>
+                <input type="text" id="urlInput" placeholder="https://www.youtube.com/watch?v=...">
+                
+                <button class="action-btn" onclick="fetchVideo()">Process Video</button>
+            </div>
+
+            <div id="loader" style="display:none; text-align:center; padding: 20px; color: var(--accent);">
+                Processing request... Please wait...
+            </div>
+
+            <div id="resultArea" class="card" style="display:none;">
+                <div class="video-meta">
+                    <img id="resThumb" src="" class="video-thumb">
+                    <div style="flex:1;">
+                        <h3 id="resTitle" style="margin-top:0;"></h3>
+                        <p id="resAuthor" style="color: var(--accent); font-weight:bold;"></p>
+                        <p id="resDuration" style="color: var(--text-muted);"></p>
+                    </div>
+                </div>
+                <h3>📥 Download Links:</h3>
+                <div id="resLinks"></div>
+            </div>
         </div>
 
-        <div id="status">Memproses...</div>
+        <div id="docs" class="page-section">
+            
+            <div class="card">
+                <h2 style="color: var(--success);">🔑 API Key Generator</h2>
+                <p>You need an API Key to use this service. Click the button below to generate your free, unlimited key.</p>
+                <button class="action-btn" style="background-color: var(--success);" onclick="generateKey()">GENERATE NEW KEY</button>
+                <div id="newKeyBox" class="apikey-display"></div>
+                <p style="font-size: 0.9em; color: var(--text-muted); margin-top: 10px;">
+                    * Save this key! You will need it for the code examples below.
+                </p>
+            </div>
+
+            <div class="card">
+                <h2>📚 Complete Developer Documentation</h2>
+                <p>Welcome to the API documentation. This API allows you to fetch download links for any YouTube video programmatically.</p>
+                
+                <h3>🌐 Base Endpoint</h3>
+                <pre><code id="baseUrl"></code></pre>
+                
+                <h3>📝 Request Parameters</h3>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>url</code></td>
+                            <td>String</td>
+                            <td>Yes</td>
+                            <td>The full YouTube video URL (e.g. https://www.youtube.com/watch?v=...)</td>
+                        </tr>
+                        <tr>
+                            <td><code>apikey</code></td>
+                            <td>String</td>
+                            <td>Yes</td>
+                            <td>Your generated API Key (via query param or header 'x-api-key')</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>💻 Code Examples</h3>
+                <p>Select your programming language below to see the implementation code:</p>
+
+                <div class="tabs">
+                    <button class="tab-btn active-tab" onclick="switchTab('js-axios')">Node.js (Axios)</button>
+                    <button class="tab-btn" onclick="switchTab('js-fetch')">Node.js (Fetch/ESM)</button>
+                    <button class="tab-btn" onclick="switchTab('python')">Python</button>
+                    <button class="tab-btn" onclick="switchTab('php')">PHP</button>
+                    <button class="tab-btn" onclick="switchTab('bash')">Bash / cURL</button>
+                    <button class="tab-btn" onclick="switchTab('lua')">Lua</button>
+                    <button class="tab-btn" onclick="switchTab('go')">Go (Golang)</button>
+                    <button class="tab-btn" onclick="switchTab('csharp')">C# (.NET)</button>
+                </div>
+
+                <div id="js-axios" class="code-block">
+<pre>
+const axios = require('axios');
+
+const API_KEY = 'YOUR_API_KEY_HERE';
+const VIDEO_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+// Replace with your Vercel URL
+const BASE_URL = 'https://xayz-ytdl.vercel.app/api/youtube';
+
+async function downloadVideo() {
+    try {
+        console.log("Fetching data...");
+        const response = await axios.get(BASE_URL, {
+            params: {
+                url: VIDEO_URL,
+                apikey: API_KEY
+            }
+        });
+
+        const data = response.data;
+        if(data.status) {
+            console.log("Title:", data.data.title);
+            console.log("Downloads:", data.data.downloads);
+        }
+    } catch (error) {
+        console.error("Error:", error.response ? error.response.data : error.message);
+    }
+}
+
+downloadVideo();
+</pre>
+                </div>
+
+                <div id="js-fetch" class="code-block" style="display:none">
+<pre>
+// Save as index.mjs or set "type": "module" in package.json
+import fetch from 'node-fetch'; // or built-in in Node 18+
+
+const API_KEY = 'YOUR_API_KEY_HERE';
+const VIDEO_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+const ENDPOINT = `https://xayz-ytdl.vercel.app/api/youtube?url=${encodeURIComponent(VIDEO_URL)}&apikey=${API_KEY}`;
+
+async function main() {
+    try {
+        const res = await fetch(ENDPOINT);
+        const json = await res.json();
+        
+        if (json.status) {
+            console.log(`Video Found: ${json.data.title}`);
+            console.log(json.data.downloads);
+        } else {
+            console.log("Failed:", json.message);
+        }
+    } catch (err) {
+        console.error("Network Error:", err);
+    }
+}
+
+main();
+</pre>
+                </div>
+
+                <div id="python" class="code-block" style="display:none">
+<pre>
+import requests
+import json
+
+api_key = "YOUR_API_KEY_HERE"
+video_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+base_url = "https://xayz-ytdl.vercel.app/api/youtube"
+
+params = {
+    "url": video_url,
+    "apikey": api_key
+}
+
+try:
+    print("Sending request...")
+    response = requests.get(base_url, params=params)
+    
+    if response.status_code == 200:
+        data = response.json()
+        print(f"Title: {data['data']['title']}")
+        # Print download links
+        for item in data['data']['downloads']:
+            print(f"Quality: {item['quality']} | URL: {item['url']}")
+    else:
+        print(f"Error {response.status_code}: {response.text}")
+
+except Exception as e:
+    print(f"Exception occurred: {e}")
+</pre>
+                </div>
+
+                <div id="php" class="code-block" style="display:none">
+<pre>
+&lt;?php
+
+$apiKey = "YOUR_API_KEY_HERE";
+$videoUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+$baseUrl = "https://xayz-ytdl.vercel.app/api/youtube";
+
+// Build Query
+$query = http_build_query([
+    'url' => $videoUrl,
+    'apikey' => $apiKey
+]);
+
+$finalUrl = $baseUrl . '?' . $query;
+
+// Initialize cURL
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $finalUrl);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+$response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+if ($httpCode == 200) {
+    $data = json_decode($response, true);
+    echo "Title: " . $data['data']['title'] . "\n";
+    print_r($data['data']['downloads']);
+} else {
+    echo "Error: HTTP $httpCode\n";
+    echo $response;
+}
+?&gt;
+</pre>
+                </div>
+
+                <div id="bash" class="code-block" style="display:none">
+<pre>
+# Simple GET request using curl
+# Replace variables with your actual data
+
+API_KEY="YOUR_API_KEY_HERE"
+VIDEO="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+HOST="https://xayz-ytdl.vercel.app/api/youtube"
+
+curl -G "${HOST}" \
+    --data-urlencode "url=${VIDEO}" \
+    --data-urlencode "apikey=${API_KEY}"
+</pre>
+                </div>
+
+                <div id="lua" class="code-block" style="display:none">
+<pre>
+-- Requires 'coro-http' and 'json' libraries (Common in Luvit/Discordia)
+local http = require('coro-http')
+local json = require('json')
+
+local apiKey = "YOUR_API_KEY_HERE"
+local video = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+-- URL Encoding function is assumed to exist or manually encode
+local urlEncoded = video:gsub("([^%w])", function(c) 
+    return string.format("%%%02X", string.byte(c)) 
+end)
+
+local endpoint = "https://xayz-ytdl.vercel.app/api/youtube?apikey="..apiKey.."&url="..urlEncoded
+
+coroutine.wrap(function()
+    local res, body = http.request("GET", endpoint)
+    if res.code == 200 then
+        local data = json.decode(body)
+        print("Video Title: " .. data.data.title)
+    else
+        print("Request Failed: " .. res.code)
+    end
+end)()
+</pre>
+                </div>
+
+                <div id="go" class="code-block" style="display:none">
+<pre>
+package main
+
+import (
+    "fmt"
+    "io/ioutil"
+    "net/http"
+    "net/url"
+)
+
+func main() {
+    baseURL := "https://xayz-ytdl.vercel.app/api/youtube"
+    videoURL := "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    apiKey := "YOUR_API_KEY_HERE"
+
+    // Construct URL with parameters
+    u, _ := url.Parse(baseURL)
+    q := u.Query()
+    q.Set("url", videoURL)
+    q.Set("apikey", apiKey)
+    u.RawQuery = q.Encode()
+
+    resp, err := http.Get(u.String())
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    body, _ := ioutil.ReadAll(resp.Body)
+    fmt.Println(string(body))
+}
+</pre>
+                </div>
+
+                 <div id="csharp" class="code-block" style="display:none">
+<pre>
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        string baseUrl = "https://xayz-ytdl.vercel.app/api/youtube";
+        string videoUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        string apiKey = "YOUR_API_KEY_HERE";
+
+        using (HttpClient client = new HttpClient())
+        {
+            var uriBuilder = new UriBuilder(baseUrl);
+            var query = System.Web.HttpUtility.ParseQueryString(uriBuilder.Query);
+            query["url"] = videoUrl;
+            query["apikey"] = apiKey;
+            uriBuilder.Query = query.ToString();
+
+            try {
+                HttpResponseMessage response = await client.GetAsync(uriBuilder.ToString());
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseBody);
+            } catch(Exception e) {
+                Console.WriteLine("Error: " + e.Message);
+            }
+        }
+    }
+}
+</pre>
+                </div>
+
+            </div>
+            </div>
+
     </div>
 
     <script>
-        function download(type) {
-            const url = document.getElementById('urlInput').value;
-            const status = document.getElementById('status');
+        // Set Base URL for Docs
+        document.getElementById('baseUrl').innerText = window.location.origin + "/api/youtube";
 
-            if (!url) {
-                status.innerText = "⚠️ Harap masukkan URL!";
-                status.style.opacity = "1";
-                status.style.color = "#ff4444";
+        // SIDEBAR LOGIC
+        function toggleNav() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("main-content");
+            
+            if (sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            } else {
+                sidebar.classList.add('open');
+            }
+        }
+
+        // Close sidebar if clicked outside (Mobile)
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById("sidebar");
+            const hamburger = document.querySelector('.hamburger');
+            
+            if (window.innerWidth < 768) {
+                if (!sidebar.contains(event.target) && !hamburger.contains(event.target) && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+
+        // SECTION SWITCHING LOGIC
+        function showSection(id) {
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            document.querySelectorAll('#sidebar a').forEach(link => link.classList.remove('active'));
+            document.getElementById('nav-' + id).classList.add('active');
+            
+            // Auto close sidebar on mobile after selection
+            if(window.innerWidth < 768) {
+                document.getElementById("sidebar").classList.remove('open');
+            }
+        }
+
+        // API KEY GENERATOR LOGIC
+        function generateKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let key = 'sk-ultimate-';
+            for (let i = 0; i < 32; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            const box = document.getElementById('newKeyBox');
+            box.style.display = 'block';
+            box.innerText = key;
+            
+            // Save to localStorage for convenience
+            localStorage.setItem('yt_api_key', key);
+            document.getElementById('apiKeyInput').value = key;
+        }
+
+        // TAB SWITCHING LOGIC (DOCS)
+        function switchTab(tabId) {
+            document.querySelectorAll('.code-block').forEach(el => el.style.display = 'none');
+            document.getElementById(tabId).style.display = 'block';
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active-tab'));
+            event.target.classList.add('active-tab');
+        }
+
+        // DOWNLOADER LOGIC
+        async function fetchVideo() {
+            const url = document.getElementById('urlInput').value;
+            const apiKey = document.getElementById('apiKeyInput').value;
+            const resultArea = document.getElementById('resultArea');
+            const loader = document.getElementById('loader');
+
+            if (!url || !apiKey) {
+                alert("Please enter both URL and API Key");
                 return;
             }
 
-            status.innerText = "⏳ Sedang memproses... Harap tunggu.";
-            status.style.opacity = "1";
-            status.style.color = "#00ff88";
+            resultArea.style.display = 'none';
+            loader.style.display = 'block';
 
-            window.location.href = `/api/download?url=${encodeURIComponent(url)}&type=${type}`;
-            
-            setTimeout(() => {
-                status.innerText = "✅ Download dimulai!";
-            }, 3000);
+            try {
+                const res = await fetch(`/api/youtube?url=${encodeURIComponent(url)}&apikey=${apiKey}`);
+                const data = await res.json();
+
+                loader.style.display = 'none';
+
+                if (data.status) {
+                    document.getElementById('resTitle').innerText = data.data.title;
+                    document.getElementById('resAuthor').innerText = "By: " + data.data.author;
+                    document.getElementById('resDuration').innerText = "Duration: " + data.data.duration + "s";
+                    document.getElementById('resThumb').src = data.data.thumbnail;
+                    
+                    const linksContainer = document.getElementById('resLinks');
+                    linksContainer.innerHTML = '';
+
+                    data.data.downloads.forEach(dl => {
+                        const div = document.createElement('div');
+                        div.className = 'dl-item';
+                        
+                        let badgeColor = dl.type === 'audio_only' ? '#f59e0b' : '#3b82f6';
+                        let typeText = dl.type === 'audio_only' ? '🎵 Audio Only' : '🎬 Video + Audio';
+
+                        div.innerHTML = `
+                            <div>
+                                <strong style="color:${badgeColor}">${typeText}</strong>
+                                <div style="font-size:14px; color:#ccc;">${dl.quality} • ${dl.format}</div>
+                            </div>
+                            <a href="${dl.url}" target="_blank" class="dl-btn">Download</a>
+                        `;
+                        linksContainer.appendChild(div);
+                    });
+
+                    resultArea.style.display = 'block';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (e) {
+                loader.style.display = 'none';
+                alert('System Error or Timeout. Try again.');
+            }
+        }
+
+        // Auto-load key if exists
+        const savedKey = localStorage.getItem('yt_api_key');
+        if (savedKey) {
+            document.getElementById('apiKeyInput').value = savedKey;
         }
     </script>
 </body>
-  </html>
+</html>
