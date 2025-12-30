@@ -99,8 +99,11 @@
         .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 15px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 14px; }
         .btn:hover { background: #7c3aed; transform: translateY(-2px); }
 
-        .res-box { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
-        .thumb { width: 300px; border-radius: 12px; border: 1px solid var(--border); }
+        /* FIXED LAYOUT FOR RESULT BOX */
+        .res-box { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; align-items: flex-start; }
+        .thumb { width: 100%; max-width: 320px; border-radius: 12px; border: 1px solid var(--border); object-fit: cover; }
+        .res-info { flex: 1; min-width: 250px; }
+
         .dl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
         
         .dl-btn {
@@ -132,6 +135,7 @@
             border: 1px solid var(--border); overflow-x: auto;
             font-family: 'JetBrains Mono', monospace; font-size: 13px;
             line-height: 1.6; color: #a5f3fc; margin: 0;
+            white-space: pre;
         }
         
         .c-comment { color: #6b7280; font-style: italic; }
@@ -150,6 +154,14 @@
         }
         .json-link-btn:hover { background: rgba(6,182,212,0.1); }
         
+        /* FIXED JSON BOX CSS */
+        .debug-container {
+            margin-top: 20px; 
+            border-top: 1px solid var(--border); 
+            padding-top: 10px;
+            width: 100%; /* Force full width */
+        }
+
         .raw-json-box {
             background: #000;
             padding: 15px;
@@ -157,11 +169,26 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 11px;
             color: #d1d5db;
-            overflow: auto;
-            height: 200px;
+            overflow: auto; /* Allow scrollbar if needed */
+            max-height: 300px;
+            width: 100%; /* Ensure it fits container */
+            max-width: 100%;
             margin-top: 10px;
             border: 1px solid var(--border);
+            white-space: pre-wrap; /* Wrap long lines */
+            word-wrap: break-word; /* Prevent overflow */
         }
+
+        /* GUIDE STEPS */
+        .step { background: rgba(255,255,255,0.03); padding: 20px; border-left: 3px solid var(--primary); margin-bottom: 15px; border-radius: 0 10px 10px 0; }
+        .step h3 { margin: 0 0 5px 0; color: #fff; font-size: 16px; }
+        .step p { margin: 0; font-size: 14px; color: var(--text-muted); }
+
+        /* API METHODS TABLE */
+        .method-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .method-table th { text-align: left; color: var(--primary); border-bottom: 1px solid var(--border); padding: 10px; font-size: 13px; }
+        .method-table td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px; font-size: 13px; color: var(--text-muted); }
+        .badge-get { background: #06b6d4; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: 800; font-size: 10px; }
 
     </style>
 </head>
@@ -184,6 +211,12 @@
                 <div class="nav-item active" onclick="nav('home')">🏠 Home Downloader</div>
                 <div class="nav-item" onclick="nav('search')">🔍 Search Engine</div>
                 <div class="nav-item" onclick="nav('apikey')">🔑 API Key Manager</div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-label">DOCUMENTATION</div>
+                <div class="nav-item" onclick="nav('guide')">📚 Guide / Tutorial</div>
+                <div class="nav-item" onclick="nav('methods')">🔌 Code Methods (GET/JSON)</div>
             </div>
 
             <div class="nav-group">
@@ -270,6 +303,98 @@
                 </div>
             </div>
 
+            <div id="guide" class="section">
+                <div class="card">
+                    <h1>How To Use Guide</h1>
+                    <p>Complete tutorial for using Xayz API.</p>
+                    <hr style="border:0; border-bottom:1px solid var(--border); margin:20px 0;">
+
+                    <div class="step">
+                        <h3>1. Generate API Key</h3>
+                        <p>Go to the <b>API Key Manager</b> menu. Click the "GENERATE NEW KEY" button. Copy the key that appears (e.g., xayztech-xxxx). This key is required for all requests.</p>
+                    </div>
+
+                    <div class="step">
+                        <h3>2. Searching Videos</h3>
+                        <p>Go to the <b>Search Engine</b> menu. Enter your API Key and a Keyword (e.g., "Justin Bieber"). Click "GO". You can copy the link from the results.</p>
+                    </div>
+
+                    <div class="step">
+                        <h3>3. Downloading Media</h3>
+                        <p>Go to <b>Home Downloader</b>. Paste your API Key and the YouTube URL. Click "START PROCESS". Buttons for MP4 (Video) and MP3 (Audio) will appear. Click to download directly.</p>
+                    </div>
+
+                    <div class="step">
+                        <h3>4. Integration (Developers)</h3>
+                        <p>If you are a developer, check the <b>Code Methods</b> and <b>Examples</b> menus to see how to integrate this API into your Node.js, Python, or PHP applications.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="methods" class="section">
+                <div class="card">
+                    <h1>API Code Methods</h1>
+                    <p>Technical details for HTTP Requests.</p>
+
+                    <div style="background:#000; padding:15px; border-radius:8px; margin-top:15px; border:1px solid var(--border);">
+                        <span class="badge-get">GET</span> <span style="font-family:'JetBrains Mono'; color:#fff; font-size:13px;">https://xayz-ytdl.vercel.app/api/youtube</span>
+                    </div>
+
+                    <table class="method-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Required</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>url</td>
+                                <td>String</td>
+                                <td>Yes</td>
+                                <td>YouTube Video URL</td>
+                            </tr>
+                            <tr>
+                                <td>apikey</td>
+                                <td>String</td>
+                                <td>Yes</td>
+                                <td>Your generated API Key</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 style="margin-top:30px;">JSON Response Structure</h3>
+                    <pre>
+{
+  "status": true,
+  "code": 200,
+  "server_used": "Xayz Tech",
+  "data": {
+    "id": "dQw4w9WgXcQ",
+    "title": "Rick Astley - Never Gonna Give You Up",
+    "duration": "212 seconds",
+    "thumbnail": "https://i.ytimg.com/...",
+    "downloads": [
+      {
+        "type": "video_auto",
+        "quality": "Auto",
+        "format": "mp4",
+        "url": "https://api/stream..."
+      },
+      {
+        "type": "audio_auto",
+        "quality": "Auto",
+        "format": "mp3",
+        "url": "https://api/stream..."
+      }
+    ]
+  }
+}</pre>
+                </div>
+            </div>
+
             <div id="js-cjs" class="section">
                 <div class="card">
                     <div class="code-header">
@@ -278,7 +403,6 @@
                     </div>
                     <p>Standard for older Node.js projects. Uses `require` and `axios`.</p>
                     <pre>
-<span class="c-comment">// 1. Install axios: npm install axios</span>
 const axios = require('axios');
 
 const CONFIG = {
@@ -290,8 +414,6 @@ const CONFIG = {
 async function main() {
     try {
         console.log("Fetching data...");
-        
-        <span class="c-comment">// Making the Request</span>
         const response = await axios.get(CONFIG.baseUrl, {
             params: {
                 url: CONFIG.videoUrl,
@@ -300,19 +422,11 @@ async function main() {
         });
 
         const data = response.data;
-
         if (data.status) {
-            console.log(`\nTitle: ${data.data.title}`);
-            console.log(`Server: ${data.server_used}`);
-            
-            console.log("\nDownloads:");
-            data.data.downloads.forEach(item => {
-                console.log(`[${item.format}] ${item.quality} -> ${item.url}`);
-            });
+            console.log(data);
         } else {
-            console.log("API Error:", data.message);
+            console.log("Error:", data.message);
         }
-
     } catch (err) {
         console.error("Error:", err.message);
     }
@@ -330,28 +444,19 @@ main();</pre>
                     </div>
                     <p>For modern projects (`"type": "module"` in package.json). Uses `import`.</p>
                     <pre>
-<span class="c-comment">// 1. Install axios: npm install axios</span>
 import axios from 'axios';
 
 const API_URL = 'https://xayz-ytdl.vercel.app/api/youtube';
 const API_KEY = 'xayztech-YOUR_KEY_HERE';
 const URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
 
-<span class="c-comment">// Top-level await (Node 18+)</span>
 try {
     const { data } = await axios.get(API_URL, {
         params: { url: URL, apikey: API_KEY }
     });
 
     if (data.status) {
-        const info = data.data;
-        console.log(`🎥 Found: ${info.title}`);
-        console.log(`👤 Author: ${info.author}`);
-        
-        <span class="c-comment">// Filter only MP4</span>
-        const mp4 = info.downloads.find(d => d.format === 'mp4');
-        if(mp4) console.log(`⬇️ Download Video: ${mp4.url}`);
-        
+        console.log(data);
     } else {
         console.error("Failed:", data.message);
     }
@@ -374,17 +479,10 @@ const KEY = 'xayztech-YOUR_KEY_HERE';
 const VIDEO = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
 
 async function download() {
-    <span class="c-comment">// Construct URL with Query Params manually</span>
     const url = `${ENDPOINT}?url=${encodeURIComponent(VIDEO)}&apikey=${KEY}`;
-
     const res = await fetch(url);
     const json = await res.json();
-
-    if (json.status) {
-        console.log(JSON.stringify(json.data, null, 2));
-    } else {
-        console.log("Error:", json.message);
-    }
+    console.log(json);
 }
 
 download();</pre>
@@ -405,17 +503,9 @@ const MY_KEY = 'xazytech-YOUR_KEY_HERE';
 async function getVideo(youtubeUrl) {
     try {
         const url = `${API_BASE}?url=${encodeURIComponent(youtubeUrl)}&apikey=${MY_KEY}`;
-        
         const req = await fetch(url);
         const res = await req.json();
-
-        if(res.status) {
-            alert(`Video Found: ${res.data.title}`);
-            // Redirect to download first format
-            // window.location.href = res.data.downloads[0].url;
-        } else {
-            alert(res.message);
-        }
+        console.log(res);
     } catch (e) {
         console.error(e);
     }
@@ -438,22 +528,13 @@ const KEY = 'xayztech-YOUR_KEY_HERE';
 const VIDEO = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
 
 $.ajax({
-    url: URL,
-    type: 'GET',
-    data: {
-        url: VIDEO,
-        apikey: KEY
-    },
+    url: URL, type: 'GET',
+    data: { url: VIDEO, apikey: KEY },
     success: function(response) {
-        if(response.status) {
-            console.log("Title: " + response.data.title);
-            console.log(response.data.downloads);
-        } else {
-            alert("API Error: " + response.message);
-        }
+        console.log(response);
     },
     error: function(err) {
-        console.log("Network Error");
+        console.log("Error");
     }
 });</pre>
                 </div>
@@ -474,29 +555,12 @@ API_KEY = "xayztech-YOUR_KEY_HERE"
 VIDEO = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
 def main():
-    params = {
-        "url": VIDEO,
-        "apikey": API_KEY
-    }
-
+    params = { "url": VIDEO, "apikey": API_KEY }
     try:
-        print("Sending request...")
-        r = requests.get(API_URL, params=params, timeout=30)
-        
-        data = r.json()
-
-        if data.get("status"):
-            info = data["data"]
-            print(f"Title: {info['title']}")
-            print(f"Duration: {info['duration']}")
-            
-            for dl in info['downloads']:
-                print(f"[{dl['format'].upper()}] {dl['url']}")
-        else:
-            print(f"API Error: {data.get('message')}")
-
+        r = requests.get(API_URL, params=params)
+        print(r.json())
     except Exception as e:
-        print(f"Error: {e}")
+        print(e)
 
 if __name__ == "__main__":
     main()</pre>
@@ -509,7 +573,7 @@ if __name__ == "__main__":
                         <h1>Python (Aiohttp)</h1>
                         <span class="lang-tag">asynchronous</span>
                     </div>
-                    <p>For high-performance async apps (Discord bots, FastAPI). `pip install aiohttp`.</p>
+                    <p>For high-performance async apps. `pip install aiohttp`.</p>
                     <pre>
 import aiohttp
 import asyncio
@@ -520,17 +584,11 @@ VID = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
 async def fetch_video():
     params = {"url": VID, "apikey": KEY}
-    
     async with aiohttp.ClientSession() as session:
         async with session.get(URL, params=params) as resp:
             data = await resp.json()
-            
-            if data['status']:
-                print(f"Found: {data['data']['title']}")
-            else:
-                print("Failed")
+            print(data)
 
-# Run loop
 asyncio.run(fetch_video())</pre>
                 </div>
             </div>
@@ -541,7 +599,6 @@ asyncio.run(fetch_video())</pre>
                         <h1>PHP (cURL)</h1>
                         <span class="lang-tag">robust</span>
                     </div>
-                    <p>Recommended for production PHP.</p>
                     <pre>
 &lt;?php
 $baseUrl = "https://xayz-ytdl.vercel.app/api/youtube";
@@ -549,25 +606,12 @@ $key = "xayztech-YOUR_KEY_HERE";
 $vid = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
 $query = http_build_query(['url' => $vid, 'apikey' => $key]);
-$finalUrl = $baseUrl . '?' . $query;
-
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $finalUrl);
+curl_setopt($ch, CURLOPT_URL, $baseUrl . '?' . $query);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
 $res = curl_exec($ch);
 curl_close($ch);
-
-$json = json_decode($res, true);
-
-if ($json['status']) {
-    echo "Title: " . $json['data']['title'];
-    print_r($json['data']['downloads']);
-} else {
-    echo "Error: " . $json['message'];
-}
+echo $res;
 ?&gt;</pre>
                 </div>
             </div>
@@ -578,24 +622,15 @@ if ($json['status']) {
                         <h1>PHP (file_get_contents)</h1>
                         <span class="lang-tag">simple</span>
                     </div>
-                    <p>Easiest method, but ensure `allow_url_fopen` is enabled in php.ini.</p>
                     <pre>
 &lt;?php
 $baseUrl = "https://xayz-ytdl.vercel.app/api/youtube";
 $key = "xayztech-YOUR_KEY_HERE";
 $vid = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
-// Manual query string construction
 $url = "$baseUrl?url=" . urlencode($vid) . "&apikey=$key";
-
 $response = file_get_contents($url);
-
-if($response) {
-    $data = json_decode($response, true);
-    if($data['status']) {
-        echo "Found: " . $data['data']['title'];
-    }
-}
+echo $response;
 ?&gt;</pre>
                 </div>
             </div>
@@ -608,7 +643,6 @@ if($response) {
                     </div>
                     <pre>
 package main
-
 import (
     "fmt"
     "io/ioutil"
@@ -627,10 +661,7 @@ func main() {
     q.Set("apikey", key)
     u.RawQuery = q.Encode()
 
-    resp, err := http.Get(u.String())
-    if err != nil { panic(err) }
-    defer resp.Body.Close()
-
+    resp, _ := http.Get(u.String())
     body, _ := ioutil.ReadAll(resp.Body)
     fmt.Println(string(body))
 }</pre>
@@ -643,16 +674,10 @@ func main() {
                         <h1>Java (OkHttp)</h1>
                         <span class="lang-tag">android</span>
                     </div>
-                    <p>Requires OkHttp library.</p>
                     <pre>
 OkHttpClient client = new OkHttpClient();
-
 String url = "https://xayz-ytdl.vercel.app/api/youtube?url=...&apikey=...";
-
-Request request = new Request.Builder()
-  .url(url)
-  .build();
-
+Request request = new Request.Builder().url(url).build();
 Response response = client.newCall(request).execute();
 System.out.println(response.body().string());</pre>
                 </div>
@@ -685,15 +710,10 @@ class Program {
                         <h1>Bash / Terminal</h1>
                         <span class="lang-tag">cli</span>
                     </div>
-                    <p>Using cURL or Wget.</p>
                     <pre>
-<span class="c-comment"># 1. Simple GET</span>
 curl -G "https://xayz-ytdl.vercel.app/api/youtube" \
     --data-urlencode "url=https://www.youtube.com/watch?v=dQw4w9WgXcQ" \
-    --data-urlencode "apikey=sk-pro-YOUR_KEY"
-
-<span class="c-comment"># 2. Extract Download Link with jq (if installed)</span>
-curl -s "https://xayz-ytdl.vercel.app/api/youtube?url=...&apikey=..." | jq '.data.downloads[0].url'</pre>
+    --data-urlencode "apikey=xayztech-YOUR_KEY"</pre>
                 </div>
             </div>
 
@@ -792,7 +812,7 @@ curl -s "https://xayz-ytdl.vercel.app/api/youtube?url=...&apikey=..." | jq '.dat
                     let html = `
                     <div class="res-box">
                         <img src="${d.thumbnail}" class="thumb">
-                        <div style="flex:1;">
+                        <div class="res-info">
                             <h2 style="margin-top:0;">${d.title}</h2>
                             <p style="font-size:12px;">${d.author} • ${d.duration}</p>
                             <p style="font-size:11px; color:var(--primary);">Engine: ${json.server_used}</p>
@@ -808,10 +828,10 @@ curl -s "https://xayz-ytdl.vercel.app/api/youtube?url=...&apikey=..." | jq '.dat
                     });
                     
                     html += `</div>
-                            <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:10px;">
+                            <div class="debug-container">
                                 <div style="font-size:12px; font-weight:700; color:#aaa;">DEBUGGING TOOLS</div>
                                 <a href="${apiUrl}" target="_blank" class="json-link-btn">OPEN JSON API URL ↗</a>
-                                <div class="raw-json-box"><pre style="background:transparent; border:none; padding:0; color:#d1d5db;">${JSON.stringify(json, null, 2)}</pre></div>
+                                <div class="raw-json-box">${JSON.stringify(json, null, 2)}</div>
                             </div>
                         </div>
                     </div>`;
@@ -825,7 +845,7 @@ curl -s "https://xayz-ytdl.vercel.app/api/youtube?url=...&apikey=..." | jq '.dat
                 }
             } catch(e) {
                 load.style.display='none';
-                alert("Error");
+                alert("Error: " + e.message);
             }
         }
 
