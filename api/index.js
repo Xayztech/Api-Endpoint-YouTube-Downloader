@@ -175,7 +175,7 @@ export default async function handler(req, res) {
               owner: "XYCoolcraft",
               Developer: "XYCoolcraft",
                 data: {
-                  id: videoId,
+                       id: videoId,
                        title: d.title,
                        thumbnail: d.videoThumbnails ? d.videoThumbnails[0].url : "", 
                        duration: d.lengthSeconds,
@@ -226,9 +226,10 @@ export default async function handler(req, res) {
                 owner: "XYCoolcraft", 
                 Developer: "XYCoolcraft",
                   data: {
-                    id: r.id,
+                         id: r.id,
                          title: r.title, 
-                         thumbnail: r.thumb, 
+                         thumbnail: r.thumb,
+                         source: r.source,
                          duration: r.duration, 
                          author: "External", 
                          downloads
