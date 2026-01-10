@@ -153,18 +153,33 @@ export default async function handler(req, res) {
             // Link Video
             if(d.formatStreams) {
                 d.formatStreams.forEach(v => {
-                    downloads.push({ type: "video", quality: v.qualityLabel, format: v.container, url: v.url });
+                    downloads.push({ type: "video",
+                                    quality: v.qualityLabel,
+                                    format: v.container, 
+                                    url: v.url });
                 });
             }
             // Link Audio
             if(d.adaptiveFormats) {
                 const aud = d.adaptiveFormats.find(a => a.type.includes("audio/mp4"));
-                if(aud) downloads.push({ type: "audio", quality: "HQ", format: "m4a", url: aud.url });
+                if(aud) downloads.push({ type: "audio",
+                                        quality: "HQ", 
+                                        format: "m4a", 
+                                        url: aud.url });
             }
             
             resultData = {
-                status: true, code: 200, server_used: "Xayz Tech", owner: "XYCoolcraft", Developer: "XYCoolcraft",
-                data: { id: videoId, title: d.title, thumbnail: d.videoThumbnails ? d.videoThumbnails[0].url : "", duration: d.lengthSeconds, author: d.author, downloads }
+                status: true, 
+              code: 200, 
+              server_used: "Xayz Tech", 
+              owner: "XYCoolcraft",
+              Developer: "XYCoolcraft",
+                data: { id: videoId,
+                       title: d.title,
+                       thumbnail: d.videoThumbnails ? d.videoThumbnails[0].url : "", 
+                       duration: d.lengthSeconds,
+                       author: d.author, 
+                       downloads }
             };
             success = true;
         }
@@ -188,19 +203,32 @@ export default async function handler(req, res) {
               // Membungkus link BotCahx dengan Proxy Stream kita agar bisa di-download otomatis
               if(r.mp4) {
                   downloads.push({
-                      type: "video_auto", quality: "Auto", format: "mp4",
+                      type: "video_auto",
+                    quality: "Auto",
+                    format: "mp4",
                       url: `${baseUrl}?action=stream&type=mp4&filename=${encodeURIComponent(r.title)}&stream_url=${encodeURIComponent(r.mp4)}`
                   });
               }
               if(r.mp3) {
                   downloads.push({
-                      type: "audio_auto", quality: "Auto", format: "mp3",
+                      type: "audio_auto", 
+                    quality: "Auto", 
+                    format: "mp3",
                       url: `${baseUrl}?action=stream&type=mp3&filename=${encodeURIComponent(r.title)}&stream_url=${encodeURIComponent(r.mp3)}`
                   });
               }
               resultData = {
-                  status: true, code: 200, server_used: "Xayz Tech", owner: "XYCoolcraft", Developer: "XYCoolcraft",
-                  data: { id: r.id, title: r.title, thumbnail: r.thumb, duration: r.duration, author: "External", downloads }
+                  status: true,
+                code: 200,
+                server_used: "Xayz Tech", 
+                owner: "XYCoolcraft", 
+                Developer: "XYCoolcraft",
+                  data: { id: r.id,
+                         title: r.title, 
+                         thumbnail: r.thumb, 
+                         duration: r.duration, 
+                         author: "External", 
+                         downloads }
               };
               success = true;
           }
