@@ -174,12 +174,14 @@ export default async function handler(req, res) {
               server_used: "Xayz Tech", 
               owner: "XYCoolcraft",
               Developer: "XYCoolcraft",
-                data: { id: videoId,
+                data: {
+                  id: videoId,
                        title: d.title,
                        thumbnail: d.videoThumbnails ? d.videoThumbnails[0].url : "", 
                        duration: d.lengthSeconds,
                        author: d.author, 
-                       downloads }
+                       downloads
+                }
             };
             success = true;
         }
@@ -223,12 +225,14 @@ export default async function handler(req, res) {
                 server_used: "Xayz Tech", 
                 owner: "XYCoolcraft", 
                 Developer: "XYCoolcraft",
-                  data: { id: r.id,
+                  data: {
+                    id: r.id,
                          title: r.title, 
                          thumbnail: r.thumb, 
                          duration: r.duration, 
                          author: "External", 
-                         downloads }
+                         downloads
+                  }
               };
               success = true;
           }
