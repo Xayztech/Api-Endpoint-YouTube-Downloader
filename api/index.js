@@ -36,6 +36,7 @@ const userAgents = [
 
 const FALLBACK_API_URL = "https://api.botcahx.eu.org/api/dowloader/yt";
 const FALLBACK_API_KEY = "XYCoolcraftNihBoss"; 
+const LONG_TIMEOUT = 921600000;
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -59,7 +60,8 @@ export default async function handler(req, res) {
         const response = await axios({
             method: 'get',
             url: stream_url,
-            responseType: 'stream'
+            responseType: 'stream',
+            timeout: LONG_TIMEOUT
         });
         const contentType = type === 'mp3' ? 'audio/mpeg' : 'video/mp4';
         const extension = type === 'mp3' ? 'mp3' : 'mp4';
@@ -126,7 +128,9 @@ export default async function handler(req, res) {
     try {
         const instance = shuffled[attempt];
         attempt++;
-        const resp = await axios.get(`${instance}/api/v1/videos/${videoId}`, { timeout: 4000 });
+        const resp = await axios.get(`${instance}/api/v1/videos/${videoId}`, { 
+            timeout: LONG_TIMEOUT 
+        });
         if(resp.status === 200) {
             const d = resp.data;
             let downloads = [];
@@ -170,7 +174,7 @@ export default async function handler(req, res) {
   if(!success) {
       try {
           const fbUrl = `${FALLBACK_API_URL}?url=${encodeURIComponent(url)}&apikey=${FALLBACK_API_KEY}`;
-          const fbRes = await axios.get(fbUrl);
+          const fbRes = await axios.get(fbUrl, { timeout: LONG_TIMEOUT });
           const fb = fbRes.data;
 
           if(fb.status && fb.result) {
@@ -201,7 +205,7 @@ export default async function handler(req, res) {
                 code: 200,
                 server_used: "Xayz Tech", 
                 owner: "XYCoolcraft", 
-                Developer: "XYCoolcraft",
+                developer: "XYCoolcraft",
                   data: {
                          id: r.id,
                          title: r.title, 
