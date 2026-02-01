@@ -6,9 +6,6 @@
     <meta name="description" content="Xayz API YTDL - Universal YouTube Downloader & Search Engine for Developers.">
     <meta name="keywords" content="YouTube Downloader, API, JSON, Developer Tools, MP3, MP4">
     <meta name="theme-color" content="#8b5cf6">
-    <meta property="og:title" content="Xayz Api YT • Developer Hub">
-    <meta property="og:description" content="Free Unlimited YouTube API for Developers.">
-    
     <title>Xayz Api YT • Developer Hub</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -236,6 +233,11 @@
                 <div class="nav-label">MAIN TOOLS</div>
                 <div class="nav-item active" onclick="nav('home')">🏠 Home Downloader</div>
                 <div class="nav-item" onclick="nav('search')">🔍 Search Engine</div>
+                <div class="nav-item" onclick="nav('mixed')">🚀 Search & DL</div>
+            </div>
+            
+            <div class="nav-group">
+                <div class="nav-label">SETTINGS</div>
                 <div class="nav-item" onclick="nav('apikey')">🔑 API Key Manager</div>
             </div>
 
@@ -288,7 +290,7 @@
                     <input type="text" id="k1" placeholder="Paste your API Key here...">
                     <label style="font-size:11px; font-weight:700; color:var(--text-muted);">YOUTUBE URL</label>
                     <input type="text" id="u1" placeholder="https://youtube.com/watch?v=...">
-                    <button class="btn" onclick="dl('k1','u1','r1','l1')">INITIALIZE DOWNLOAD</button>
+                    <button class="btn" onclick="dl('k1','u1','r1','l1')">DOWNLOAD</button>
                 </div>
 
                 <div id="l1" style="display:none; text-align:center; padding:30px; color:var(--primary); font-weight:700;">PROCESSING REQUEST...</div>
@@ -297,24 +299,41 @@
 
             <div id="search" class="section">
                 <div class="card">
-                    <h1>YouTube Search</h1>
-                    <p>Search video, copy link, and download instantly.</p>
+                    <h1>Search Engine</h1>
+                    <p>Search YouTube videos.</p>
                     <br>
                     <input type="text" id="kSearch" placeholder="API Key...">
                     <div style="display:flex; gap:10px;">
                         <input type="text" id="qSearch" placeholder="Search Query (e.g. NCS Music)..." style="margin-bottom:0;">
-                        <button class="btn" style="width:auto; padding:0 30px;" onclick="doSearch()">SEARCH</button>
+                        <button class="btn" style="width:auto; padding:0 30px;" onclick="doSearchDebug()">SEARCH</button>
                     </div>
                     
                     <div id="lSearch" style="display:none; text-align:center; padding:20px;">Searching...</div>
                     <div id="resSearch" class="s-grid"></div>
+                    <div id="debugArea"></div>
+                </div>
+            </div>
+
+            <div id="mixed" class="section">
+                <div class="card">
+                    <h1>Search & Downloader</h1>
+                    <p>Search video, copy link, and download instantly in one place.</p>
+                    <br>
+                    <input type="text" id="kMix" placeholder="API Key...">
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="qMix" placeholder="Search Query..." style="margin-bottom:0;">
+                        <button class="btn" style="width:auto; padding:0 30px;" onclick="doSearchMix()">SEARCH</button>
+                    </div>
+                    
+                    <div id="lMix" style="display:none; text-align:center; padding:20px;">Searching...</div>
+                    <div id="resMix" class="s-grid"></div>
 
                     <div style="margin-top:40px; border-top:1px dashed var(--border); padding-top:20px;">
                         <h3>⬇️ Integrated Downloader</h3>
-                        <input type="text" id="uSearch" placeholder="Paste copied link here...">
-                        <button class="btn" onclick="dl('kSearch','uSearch','rSearch','lSearch2')">DOWNLOAD NOW</button>
-                        <div id="lSearch2" style="display:none; text-align:center; padding:20px;">Processing...</div>
-                        <div id="rSearch" style="margin-top:20px;"></div>
+                        <input type="text" id="uMix" placeholder="Paste copied link here...">
+                        <button class="btn" onclick="dl('kMix','uMix','rMix','lMix2')">DOWNLOAD NOW</button>
+                        <div id="lMix2" style="display:none; text-align:center; padding:20px;">Processing...</div>
+                        <div id="rMix" style="margin-top:20px;"></div>
                     </div>
                 </div>
             </div>
@@ -354,7 +373,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <div id="methods" class="section">
                 <div class="card">
                     <h1>API Code Methods</h1>
@@ -427,7 +446,18 @@
 
                     <div class="timeline">
                         <div class="update-item">
-                            <span class="update-ver">v7.0</span> <span class="update-date">Latest Release</span>
+                            <span class="update-ver">v8.0</span> <span class="update-date">Latest Release</span>
+                            <div class="update-content">
+                                <ul>
+                                    <li>Added "Search Engine" Menu with Debug JSON Feature.</li>
+                                    <li>Added "Hybrid Search & DL" Menu.</li>
+                                    <li>Optimized Search API to return more results.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="update-item">
+                            <span class="update-ver">v7.0</span> <span class="update-date">Previous</span>
                             <div class="update-content">
                                 <ul>
                                     <li>Added "Contact & Dev Info" page with Full Portfolio.</li>
@@ -440,21 +470,11 @@
                         </div>
 
                         <div class="update-item">
-                            <span class="update-ver">v6.0</span> <span class="update-date">Previous</span>
+                            <span class="update-ver">v6.0</span> <span class="update-date">Old</span>
                             <div class="update-content">
                                 <ul>
                                     <li>Added Dashboard with Realtime Clock & Timezone.</li>
                                     <li>Added "Play Online" (Streaming) functionality.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="update-item">
-                            <span class="update-ver">v5.0</span> <span class="update-date">Stable</span>
-                            <div class="update-content">
-                                <ul>
-                                    <li>Integrated Hybrid Engine.</li>
-                                    <li>Added YouTube Search Engine.</li>
                                 </ul>
                             </div>
                         </div>
@@ -876,11 +896,58 @@ curl -G "https://xayz-ytdl.vercel.app/api/youtube" \
             document.querySelectorAll('input[id^="k"]').forEach(i => i.value = k);
         }
 
-        async function doSearch() {
+        async function doSearchDebug() {
             const k = document.getElementById('kSearch').value;
             const q = document.getElementById('qSearch').value;
             const load = document.getElementById('lSearch');
             const box = document.getElementById('resSearch');
+            const debugBox = document.getElementById('debugArea');
+
+            if(!k || !q) return alert("Fill Key & Query");
+            
+            box.innerHTML = '';
+            debugBox.innerHTML = '';
+            load.style.display='block';
+
+            try {
+                const url = `/api/youtube?type=search&q=${encodeURIComponent(q)}&apikey=${k}`;
+                const req = await fetch(url);
+                const res = await req.json();
+                load.style.display='none';
+
+                if(res.status && res.data.length > 0) {
+                    res.data.forEach(v => {
+                        box.innerHTML += `
+                        <div class="s-card">
+                            <img src="${v.thumbnail}" class="s-thumb">
+                            <div class="s-info">
+                                <div class="s-title">${v.title}</div>
+                                <div style="font-size:11px; color:#aaa;">${v.author} • ${v.published}</div>
+                            </div>
+                        </div>`;
+                    });
+
+                    debugBox.innerHTML = `
+                    <div class="debug-container">
+                        <div style="font-size:12px; font-weight:700; color:#aaa;">DEBUGGING TOOLS</div>
+                        <a href="${url}" target="_blank" class="json-link-btn">OPEN JSON API URL ↗</a>
+                        <div class="raw-json-box">${JSON.stringify(res, null, 2)}</div>
+                    </div>`;
+
+                } else {
+                    box.innerHTML = '<p>No results.</p>';
+                }
+            } catch(e) {
+                load.style.display='none';
+                alert("Error");
+            }
+        }
+
+        async function doSearchMix() {
+            const k = document.getElementById('kMix').value;
+            const q = document.getElementById('qMix').value;
+            const load = document.getElementById('lMix');
+            const box = document.getElementById('resMix');
 
             if(!k || !q) return alert("Fill Key & Query");
             
@@ -980,9 +1047,7 @@ curl -G "https://xayz-ytdl.vercel.app/api/youtube" \
                         </div>
                     </div>`;
                     
-                    if(rId === 'rSearch') res.innerHTML = html;
-                    else res.innerHTML = html; 
-                    
+                    res.innerHTML = html; 
                     res.style.display='block';
                 } else {
                     alert(json.message);
