@@ -23,7 +23,6 @@
             --accent: #06b6d4;
             --success: #10b981;
             --danger: #ef4444;
-            --tiktok: #fe2c55;
             --text: #e2e8f0;
             --text-muted: #94a3b8;
             --card: rgba(20, 20, 20, 0.6);
@@ -109,8 +108,6 @@
 
         .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
         .btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3); }
-        .btn-tt { background: var(--tiktok); } 
-        .btn-tt:hover { background: #d91c45; }
 
         .profile-header { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
         .profile-pic { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: #fff; border: 3px solid rgba(255,255,255,0.1); box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
@@ -236,24 +233,9 @@
             </div>
 
             <div class="nav-group">
-                <div class="nav-label">DASHBOARD</div>
-                <div class="nav-item active" onclick="nav('dashboard-home')">📊 Overview</div>
-            </div>
-
-            <div class="nav-group">
-                <div class="nav-label">YOUTUBE TOOLS</div>
-                <div class="nav-item" onclick="nav('yt-home')">🏠 YouTube Downloader</div>
-                <div class="nav-item" onclick="nav('yt-search')">🔍 YouTube Search Only</div>
-                <div class="nav-item" onclick="nav('yt-combo')">🚀 YouTube Search + Download</div>
-            </div>
-
-            <div class="nav-group">
-                <div class="nav-label">TIKTOK TOOLS</div>
-                <div class="nav-item" onclick="nav('tt-home')">🎵 TikTok Downloader</div>
-            </div>
-
-            <div class="nav-group">
-                <div class="nav-label">SETTINGS</div>
+                <div class="nav-label">MAIN TOOLS</div>
+                <div class="nav-item active" onclick="nav('home')">🏠 Home Downloader</div>
+                <div class="nav-item" onclick="nav('search')">🔍 Search Engine</div>
                 <div class="nav-item" onclick="nav('apikey')">🔑 API Key Manager</div>
             </div>
 
@@ -285,119 +267,54 @@
 
         <main class="main-content">
 
-            <div id="dashboard-home" class="section active">
-                <div class="dashboard-header">
-                    <div>
-                        <h1 style="font-size:26px; margin:0; color:#fff;">Dashboard</h1>
-                        <p style="font-size:13px; margin:5px 0 0 0;">Welcome to Xayz API Control Panel</p>
-                    </div>
-                    <div class="clock-widget">
-                        <div class="cw-time" id="cw-time">00:00:00</div>
-                        <div class="cw-date" id="cw-date">LOADING...</div>
-                        <div class="cw-zone" id="cw-zone">DETECTING...</div>
-                    </div>
+            <div class="dashboard-header">
+                <div>
+                    <h1 style="font-size:26px; margin:0; color:#fff;">Dashboard</h1>
+                    <p style="font-size:13px; margin:5px 0 0 0;">Welcome to Xayz API Control Panel</p>
                 </div>
-                <div class="card" style="margin-top:25px;">
-                    <h3>Welcome To Xayz Api</h3>
-                    <p>What's New in V8?</p>
-                    <p>Now supporting <b>TikTok Downloader & Search</b> directly from this dashboard! Use the sidebar to navigate to TikTok Tools.</p>
+                <div class="clock-widget">
+                    <div class="cw-time" id="cw-time">00:00:00</div>
+                    <div class="cw-date" id="cw-date">LOADING...</div>
+                    <div class="cw-zone" id="cw-zone">DETECTING...</div>
                 </div>
             </div>
 
-            <div id="yt-home" class="section">
+            <div id="home" class="section active">
                 <div class="card">
                     <h1>Universal YouTube Downloader</h1>
                     <p>Created And Developer By: XYCoolcraft || Engine: Hybrid Engine</p>
                     <br>
                     <label style="font-size:11px; font-weight:700; color:var(--text-muted);">API KEY</label>
-                    <input type="text" id="k_yt_dl" placeholder="Paste your API Key here...">
+                    <input type="text" id="k1" placeholder="Paste your API Key here...">
                     <label style="font-size:11px; font-weight:700; color:var(--text-muted);">YOUTUBE URL</label>
-                    <input type="text" id="u_yt_dl" placeholder="https://youtube.com/watch?v=...">
-                    <button class="btn" onclick="dl('yt_dl','k_yt_dl','u_yt_dl','r_yt_dl','l_yt_dl')">INITIALIZE DOWNLOAD</button>
+                    <input type="text" id="u1" placeholder="https://youtube.com/watch?v=...">
+                    <button class="btn" onclick="dl('k1','u1','r1','l1')">INITIALIZE DOWNLOAD</button>
                 </div>
 
-                <div id="l_yt_dl" style="display:none; text-align:center; padding:30px; color:var(--primary); font-weight:700;">PROCESSING REQUEST...</div>
-                <div id="r_yt_dl" class="card" style="display:none; border-color:var(--primary);"></div>
+                <div id="l1" style="display:none; text-align:center; padding:30px; color:var(--primary); font-weight:700;">PROCESSING REQUEST...</div>
+                <div id="r1" class="card" style="display:none; border-color:var(--primary);"></div>
             </div>
 
-            <div id="yt-search" class="section">
+            <div id="search" class="section">
                 <div class="card">
-                    <h1>YouTube Search Only</h1>
-                    <p>Search video, copy link.</p>
+                    <h1>YouTube Search</h1>
+                    <p>Search video, copy link, and download instantly.</p>
                     <br>
-                    <input type="text" id="k_yt_s" placeholder="API Key...">
+                    <input type="text" id="kSearch" placeholder="API Key...">
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="q_yt_s" placeholder="Search Query (e.g. NCS Music)..." style="margin-bottom:0;">
-                        <button class="btn" style="width:auto; padding:0 30px;" onclick="doSearch('yt_search', 'k_yt_s', 'q_yt_s', 'l_yt_s', 'r_yt_s')">SEARCH</button>
+                        <input type="text" id="qSearch" placeholder="Search Query (e.g. NCS Music)..." style="margin-bottom:0;">
+                        <button class="btn" style="width:auto; padding:0 30px;" onclick="doSearch()">SEARCH</button>
                     </div>
                     
-                    <div id="l_yt_s" style="display:none; text-align:center; padding:20px;">Searching...</div>
-                    <div id="r_yt_s" class="s-grid"></div>
-                </div>
-            </div>
+                    <div id="lSearch" style="display:none; text-align:center; padding:20px;">Searching...</div>
+                    <div id="resSearch" class="s-grid"></div>
 
-            <div id="yt-combo" class="section">
-                <div class="card">
-                    <h1>YouTube Search + Download</h1>
-                    <p>Search, Select, and Download Instantly.</p>
-                    <input type="text" id="k_yt_c" placeholder="API Key...">
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="q_yt_c" placeholder="Search Query..." style="margin-bottom:0;">
-                        <button class="btn" style="width:auto; padding:0 30px;" onclick="doSearch('yt_search', 'k_yt_c', 'q_yt_c', 'l_yt_c', 'r_yt_c', true)">SEARCH</button>
-                    </div>
-                    <div id="l_yt_c" style="display:none; text-align:center; padding:20px;">Searching...</div>
-                    <div id="r_yt_c" class="s-grid"></div>
-                    
-                    <div id="yt-combo-dl-panel" class="card" style="display:none; margin-top:30px; border-color:var(--primary);">
+                    <div style="margin-top:40px; border-top:1px dashed var(--border); padding-top:20px;">
                         <h3>⬇️ Integrated Downloader</h3>
-                        <div id="yt-combo-res"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tt-home" class="section">
-                <div class="card">
-                    <h1 style="background: linear-gradient(to right, #fe2c55, #25f4ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TikTok Downloader</h1>
-                    <p>TikTok Downloader all types of links Without Watermark and HD!.</p>
-                    <br>
-                    <label style="font-size:11px; font-weight:700; color:var(--text-muted);">API KEY</label>
-                    <input type="text" id="k_tt_dl" placeholder="Paste your API Key here...">
-                    <label style="font-size:11px; font-weight:700; color:var(--text-muted);">TIKTOK URL</label>
-                    <input type="text" id="u_tt_dl" placeholder="https://vt.tiktok.com/...">
-                    <button class="btn btn-tt" onclick="dl('tt_dl','k_tt_dl','u_tt_dl','r_tt_dl','l_tt_dl')">INITIALIZE DOWNLOAD</button>
-                </div>
-                <div id="l_tt_dl" style="display:none; text-align:center; padding:30px; color:#fe2c55; font-weight:700;">PROCESSING REQUEST...</div>
-                <div id="r_tt_dl" class="card" style="display:none; border-color:#fe2c55;"></div>
-            </div>
-
-            <div id="tt-search" class="section">
-                <div class="card">
-                    <h1 style="background: linear-gradient(to right, #fe2c55, #25f4ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TikTok Search Only</h1>
-                    <p>Search TikTok Videos.</p>
-                    <input type="text" id="k_tt_s" placeholder="API Key...">
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="q_tt_s" placeholder="Search Query..." style="margin-bottom:0;">
-                        <button class="btn btn-tt" style="width:auto; padding:0 30px;" onclick="doSearch('tt_search', 'k_tt_s', 'q_tt_s', 'l_tt_s', 'r_tt_s')">SEARCH</button>
-                    </div>
-                    <div id="l_tt_s" style="display:none; text-align:center; padding:20px;">Searching...</div>
-                    <div id="r_tt_s" class="s-grid"></div>
-                </div>
-            </div>
-
-            <div id="tt-combo" class="section">
-                <div class="card">
-                    <h1 style="background: linear-gradient(to right, #fe2c55, #25f4ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TikTok Search + Download</h1>
-                    <p>Search and Download TikTok Instantly.</p>
-                    <input type="text" id="k_tt_c" placeholder="API Key...">
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="q_tt_c" placeholder="Search Query..." style="margin-bottom:0;">
-                        <button class="btn btn-tt" style="width:auto; padding:0 30px;" onclick="doSearch('tt_search', 'k_tt_c', 'q_tt_c', 'l_tt_c', 'r_tt_c', true)">SEARCH</button>
-                    </div>
-                    <div id="l_tt_c" style="display:none; text-align:center; padding:20px;">Searching...</div>
-                    <div id="r_tt_c" class="s-grid"></div>
-                    <div id="tt-combo-dl-panel" class="card" style="display:none; margin-top:30px; border-color:#fe2c55;">
-                        <h3>⬇️ Integrated Downloader</h3>
-                        <div id="tt-combo-res"></div>
+                        <input type="text" id="uSearch" placeholder="Paste copied link here...">
+                        <button class="btn" onclick="dl('kSearch','uSearch','rSearch','lSearch2')">DOWNLOAD NOW</button>
+                        <div id="lSearch2" style="display:none; text-align:center; padding:20px;">Processing...</div>
+                        <div id="rSearch" style="margin-top:20px;"></div>
                     </div>
                 </div>
             </div>
@@ -423,17 +340,17 @@
 
                     <div class="step">
                         <h3>2. Searching Videos</h3>
-                        <p>Go to the <b>Search Engine</b> menu (YouTube or TikTok). Enter your API Key and a Keyword. Click "SEARCH". You can copy the link or use the "Search + DL" menu.</p>
+                        <p>Go to the <b>Search Engine</b> menu. Enter your API Key and a Keyword (e.g., "Justin Bieber"). Click "GO". You can copy the link from the results.</p>
                     </div>
 
                     <div class="step">
                         <h3>3. Downloading Media</h3>
-                        <p>Go to <b>Home Downloader</b>. Paste your API Key and the URL (YouTube/TikTok). Click "INITIALIZE DOWNLOAD". Buttons for Video and Audio will appear.</p>
+                        <p>Go to <b>Home Downloader</b>. Paste your API Key and the YouTube URL. Click "START PROCESS". Buttons for MP4 (Video) and MP3 (Audio) will appear.</p>
                     </div>
                     
                     <div class="step">
                         <h3>4. Streaming Online</h3>
-                        <p>After processing a video (YouTube only), a "Play Online" box will appear below the download buttons. Click "WATCH VIDEO" or "LISTEN AUDIO" to stream directly.</p>
+                        <p>After processing a video, a "Play Online" box will appear below the download buttons. Click "WATCH VIDEO" or "LISTEN AUDIO" to stream directly without downloading.</p>
                     </div>
                 </div>
             </div>
@@ -444,16 +361,8 @@
                     <p>Technical details for HTTP Requests.</p>
 
                     <div style="background:#000; padding:15px; border-radius:8px; margin-top:15px; border:1px solid var(--border);">
-                        <span class="badge-get">GET</span> <span style="font-family:'JetBrains Mono'; color:#fff; font-size:13px;">https://your-domain.vercel.app/api/youtube</span>
+                        <span class="badge-get">GET</span> <span style="font-family:'JetBrains Mono'; color:#fff; font-size:13px;">https://xayz-ytdl.vercel.app/api/youtube</span>
                     </div>
-
-                    <h3 style="margin-top:30px;">Parameters</h3>
-                    <ul style="color:#aaa; line-height:1.8; font-size:13px;">
-                        <li><code>type</code> : 'yt_dl', 'tt_dl', 'yt_search', 'tt_search'</li>
-                        <li><code>url</code> : URL Video (Required for DL)</li>
-                        <li><code>q</code> : Query Search (Required for Search)</li>
-                        <li><code>apikey</code> : Your API Key</li>
-                    </ul>
 
                     <h3 style="margin-top:30px;">Status Codes</h3>
                     <table class="status-table">
@@ -478,6 +387,35 @@
                             <td>Service Unavailable. All servers busy.</td>
                         </tr>
                     </table>
+
+                    <h3 style="margin-top:30px;">JSON Response Structure</h3>
+                    <div class="raw-json-box">
+{
+  "status": true,
+  "code": 200,
+  "server_used": "Xayz Tech",
+  "data": {
+    "id": "dQw4w9WgXcQ",
+    "title": "Rick Astley - Never Gonna Give You Up",
+    "duration": "212 seconds",
+    "thumbnail": "https://i.ytimg.com/...",
+    "downloads": [
+      {
+        "type": "video_auto",
+        "quality": "Auto",
+        "format": "mp4",
+        "url": "https://api/stream..."
+      },
+      {
+        "type": "audio_auto",
+        "quality": "Auto",
+        "format": "mp3",
+        "url": "https://api/stream..."
+      }
+    ]
+  }
+}
+                    </div>
                 </div>
             </div>
 
@@ -489,33 +427,34 @@
 
                     <div class="timeline">
                         <div class="update-item">
-                            <span class="update-ver">v8.0</span> <span class="update-date">Latest Release</span>
-                            <div class="update-content">
-                                <ul>
-                                    <li>Added TikTok Support (Downloader & Search).</li>
-                                    <li>Added Combo Features (Search + Download in one place).</li>
-                                    <li>Fixed CSS Issues.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="update-item">
-                            <span class="update-ver">v7.0</span> <span class="update-date">Previous</span>
+                            <span class="update-ver">v7.0</span> <span class="update-date">Latest Release</span>
                             <div class="update-content">
                                 <ul>
                                     <li>Added "Contact & Dev Info" page with Full Portfolio.</li>
                                     <li>Added "Update Info" (Changelog) page.</li>
                                     <li>Fixed JSON Box Overflow (CSS Glitch).</li>
+                                    <li>Added TikTok, X, WA Channel social buttons.</li>
+                                    <li>Improved Status Code documentation.</li>
                                 </ul>
                             </div>
                         </div>
 
                         <div class="update-item">
-                            <span class="update-ver">v6.0</span> <span class="update-date">Stable</span>
+                            <span class="update-ver">v6.0</span> <span class="update-date">Previous</span>
                             <div class="update-content">
                                 <ul>
                                     <li>Added Dashboard with Realtime Clock & Timezone.</li>
                                     <li>Added "Play Online" (Streaming) functionality.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="update-item">
+                            <span class="update-ver">v5.0</span> <span class="update-date">Stable</span>
+                            <div class="update-content">
+                                <ul>
+                                    <li>Integrated Hybrid Engine.</li>
+                                    <li>Added YouTube Search Engine.</li>
                                 </ul>
                             </div>
                         </div>
@@ -937,54 +876,31 @@ curl -G "https://xayz-ytdl.vercel.app/api/youtube" \
             document.querySelectorAll('input[id^="k"]').forEach(i => i.value = k);
         }
 
-        const sk = localStorage.getItem('xayz_v5_key');
-        if(sk) document.querySelectorAll('input[id^="k"]').forEach(i => i.value = sk);
-
-        async function doSearch(type, kId, qId, lId, resId, isCombo = false) {
-            const k = document.getElementById(kId).value;
-            const q = document.getElementById(qId).value;
-            const load = document.getElementById(lId);
-            const box = document.getElementById(resId);
+        async function doSearch() {
+            const k = document.getElementById('kSearch').value;
+            const q = document.getElementById('qSearch').value;
+            const load = document.getElementById('lSearch');
+            const box = document.getElementById('resSearch');
 
             if(!k || !q) return alert("Fill Key & Query");
             
             box.innerHTML = '';
             load.style.display='block';
-            
-            if(isCombo) {
-                const panelId = type === 'yt_search' ? 'yt-combo-dl-panel' : 'tt-combo-dl-panel';
-                document.getElementById(panelId).style.display = 'none';
-            }
 
             try {
-                const req = await fetch(`/api/youtube?type=${type}&q=${encodeURIComponent(q)}&apikey=${k}`);
+                const req = await fetch(`/api/youtube?type=search&q=${encodeURIComponent(q)}&apikey=${k}`);
                 const res = await req.json();
                 load.style.display='none';
 
                 if(res.status && res.data.length > 0) {
                     res.data.forEach(v => {
-                        let actionHtml = `<button class="copy-btn" onclick="copy('${v.url}', this)">COPY LINK</button>`;
-                        
-                        if(isCombo) {
-                            const dlType = type === 'yt_search' ? 'yt_dl' : 'tt_dl';
-                            const targetResId = type === 'yt_search' ? 'yt-combo-res' : 'tt-combo-res';
-                            const targetPanelId = type === 'yt_search' ? 'yt-combo-dl-panel' : 'tt-combo-dl-panel';
-                            
-                            actionHtml = `
-                                <div style="display:flex; gap:5px;">
-                                    <button class="copy-btn" style="background:var(--primary);" onclick="triggerComboDl('${dlType}', '${v.url}', '${k}', '${targetResId}', '${targetPanelId}')">DOWNLOAD</button>
-                                    <button class="copy-btn" onclick="copy('${v.url}', this)">COPY</button>
-                                </div>
-                            `;
-                        }
-
                         box.innerHTML += `
                         <div class="s-card">
                             <img src="${v.thumbnail}" class="s-thumb">
                             <div class="s-info">
                                 <div class="s-title">${v.title}</div>
-                                <div style="font-size:11px; color:#aaa;">${v.author} • ${v.duration || v.published || 'Unknown'}</div>
-                                ${actionHtml}
+                                <div style="font-size:11px; color:#aaa;">${v.author} • ${v.published}</div>
+                                <button class="copy-btn" onclick="copy('${v.url}', this)">COPY LINK</button>
                             </div>
                         </div>`;
                     });
@@ -993,82 +909,60 @@ curl -G "https://xayz-ytdl.vercel.app/api/youtube" \
                 }
             } catch(e) {
                 load.style.display='none';
-                alert("Error: " + e.message);
+                alert("Error");
             }
         }
 
         function copy(t,b) { navigator.clipboard.writeText(t); b.innerText="COPIED!"; setTimeout(()=>b.innerText="COPY LINK", 1000); }
 
-        function triggerComboDl(type, url, key, resId, panelId) {
-            document.getElementById(panelId).style.display = 'block';
-            dl(type, null, null, resId, null, { overrideUrl: url, overrideKey: key, isCombo: true });
-        }
-
-        async function dl(type, kId, uId, rId, lId, options = {}) {
-            let k, u;
+        async function dl(kId, uId, rId, lId) {
+            const k = document.getElementById(kId).value;
+            const u = document.getElementById(uId).value;
             const res = document.getElementById(rId);
-            
-            if(options.isCombo) {
-                k = options.overrideKey;
-                u = options.overrideUrl;
-                res.innerHTML = '<div style="text-align:center; padding:20px;">Fetching Download Links...</div>';
-            } else {
-                k = document.getElementById(kId).value;
-                u = document.getElementById(uId).value;
-                const load = document.getElementById(lId);
-                if(!k || !u) return alert("Fill Key & URL");
-                res.style.display='none'; 
-                load.style.display='block';
-            }
+            const load = document.getElementById(lId);
+
+            if(!k || !u) return alert("Fill Key & URL");
+
+            res.style.display='none'; load.style.display='block';
 
             try {
-                const apiUrl = `/api/youtube?type=${type}&url=${encodeURIComponent(u)}&apikey=${k}`;
+                const apiUrl = `/api/youtube?url=${encodeURIComponent(u)}&apikey=${k}`;
                 
                 const req = await fetch(apiUrl);
                 const json = await req.json();
-
-                if(!options.isCombo) document.getElementById(lId).style.display='none';
+                load.style.display='none';
 
                 if(json.status) {
                     const d = json.data;
-                    let downloads = [];
-                    
-                    if(d.downloads) downloads = d.downloads;
-                    else if(d.video_links) downloads = d.video_links;
-
-                    const mp4Link = downloads.find(x => (x.type && x.type.includes('video')) || x.format === 'mp4')?.url;
-                    const mp3Link = downloads.find(x => (x.type && x.type.includes('audio')) || x.format === 'mp3')?.url;
+                    const mp4Link = d.downloads.find(x => x.type.includes('video_auto') || x.format === 'mp4')?.url;
+                    const mp3Link = d.downloads.find(x => x.type.includes('audio_auto') || x.format === 'mp3')?.url;
 
                     let html = `
                     <div class="res-box">
-                        <img src="${d.thumbnail || d.cover}" class="res-thumb">
-                        <div class="res-content">
+                        <img src="${d.thumbnail}" class="res-thumb">
+                        <div class="res-info">
                             <h2 style="margin-top:0;">${d.title}</h2>
-                            <p style="font-size:12px;">${d.author.nickname || d.author} • ${d.duration}</p>
-                            <p style="font-size:11px; color:var(--primary);">Engine: ${json.engine || json.server_used}</p>
+                            <p style="font-size:12px;">${d.author} • ${d.duration}</p>
+                            <p style="font-size:11px; color:var(--primary);">Engine: ${json.server_used}</p>
                             <div class="dl-grid">
                     `;
-                    
-                    downloads.forEach(x => {
-                        const label = x.type ? x.type.toUpperCase() : 'DOWNLOAD';
-                        const qual = x.quality || x.format || '';
-                        const isMp3 = label.includes('AUDIO') || qual.includes('mp3');
-                        const isMp4 = label.includes('VIDEO') || qual.includes('mp4');
-                        const styleClass = isMp3 ? 'mp3' : (isMp4 ? 'mp4' : '');
-
+                    d.downloads.forEach(x => {
+                        const isMp3 = x.type.includes('audio') || x.format.includes('mp3');
                         html += `
-                        <a href="${x.url}" target="_blank" class="dl-btn ${styleClass}">
-                            <strong>${label}</strong>
-                            <span>${qual}</span>
+                        <a href="${x.url}" target="_blank" class="dl-btn ${isMp3?'mp3':'mp4'}">
+                            <strong>${isMp3?'AUDIO MP3':'VIDEO MP4'}</strong>
+                            <span>${x.quality}</span>
                         </a>`;
                     });
                     
                     html += `</div>`;
 
-                    if((mp4Link || mp3Link) && type.includes('yt')) {
+                    if(mp4Link || mp3Link) {
                         html += `
                         <div class="stream-box">
-                            <div class="stream-header"><span style="font-size:18px;">📺</span> PLAY ONLINE</div>
+                            <div class="stream-header">
+                                <span style="font-size:18px;">📺</span> PLAY ONLINE
+                            </div>
                             <div class="stream-controls">
                                 ${mp4Link ? `<button class="stream-btn" onclick="playMedia('video', '${mp4Link}', this)">WATCH VIDEO</button>` : ''}
                                 ${mp3Link ? `<button class="stream-btn" onclick="playMedia('audio', '${mp3Link}', this)">LISTEN AUDIO</button>` : ''}
@@ -1079,21 +973,23 @@ curl -G "https://xayz-ytdl.vercel.app/api/youtube" \
 
                     html += `
                             <div class="debug-container">
+                                <div style="font-size:12px; font-weight:700; color:#aaa;">DEBUGGING TOOLS</div>
                                 <a href="${apiUrl}" target="_blank" class="json-link-btn">OPEN JSON API URL ↗</a>
                                 <div class="raw-json-box">${JSON.stringify(json, null, 2)}</div>
                             </div>
                         </div>
                     </div>`;
                     
-                    res.innerHTML = html; 
+                    if(rId === 'rSearch') res.innerHTML = html;
+                    else res.innerHTML = html; 
+                    
                     res.style.display='block';
                 } else {
-                    if(options.isCombo) res.innerHTML = `<p style="color:red;">Error: ${json.message}</p>`;
-                    else alert(json.message);
+                    alert(json.message);
                 }
             } catch(e) {
-                if(!options.isCombo) document.getElementById(lId).style.display='none';
-                alert("Error Network");
+                load.style.display='none';
+                alert("Error");
             }
         }
 
@@ -1103,21 +999,43 @@ curl -G "https://xayz-ytdl.vercel.app/api/youtube" \
             container.innerHTML = '';
             document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+
             if(type === 'video') {
-                container.innerHTML = `<video controls autoplay style="width:100%; border-radius:8px;"><source src="${url}" type="video/mp4">Browser not supported.</video>`;
+                container.innerHTML = `<video controls autoplay style="width:100%; border-radius:8px;"><source src="${url}" type="video/mp4">Your browser does not support video.</video>`;
             } else {
-                container.innerHTML = `<audio controls autoplay style="width:100%;"><source src="${url}" type="audio/mpeg">Browser not supported.</audio>`;
+                container.innerHTML = `<audio controls autoplay style="width:100%;"><source src="${url}" type="audio/mpeg">Your browser does not support audio.</audio>`;
             }
         }
 
         function updateClock() {
             const now = new Date();
-            document.getElementById('cw-time').innerText = now.toLocaleTimeString('en-GB', { hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit' });
-            document.getElementById('cw-date').innerText = now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase();
-            document.getElementById('cw-zone').innerText = Intl.DateTimeFormat().resolvedOptions().timeZone.replace('_', ' ').toUpperCase();
+            
+            const timeStr = now.toLocaleTimeString('en-GB', { 
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('cw-time').innerText = timeStr;
+
+            const dateStr = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('cw-date').innerText = dateStr.toUpperCase();
+
+            let zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            zone = zone.replace('_', ' ').toUpperCase();
+            document.getElementById('cw-zone').innerText = zone;
         }
+
         setInterval(updateClock, 1000);
         updateClock();
+
+        const sk = localStorage.getItem('xayz_v5_key');
+        if(sk) document.querySelectorAll('input[id^="k"]').forEach(i => i.value = sk);
     </script>
 </body>
 </html>
